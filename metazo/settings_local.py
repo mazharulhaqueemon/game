@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'fcm',
     # My Apps
     'accounts',
+    'balance',
+    'call_histories',
+    'favorites',
     'profiles',
 ]
 
