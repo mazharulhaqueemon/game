@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.core.validators import RegexValidator
+from django.contrib.auth.models import PermissionsMixin
 
 # Create your models here.
 class UserManager(BaseUserManager):
@@ -37,7 +38,7 @@ class UserManager(BaseUserManager):
         )
         return user
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
     # phone_regex = RegexValidator(regex = r'^\+?1?\d{9,14}$',message="Phone number must be 11 digits")
     # phone = models.CharField(validators=[phone_regex],max_length=11,unique=True)
     phone = models.CharField(max_length=14,unique=True,verbose_name='Mobile Number (use +88)')
