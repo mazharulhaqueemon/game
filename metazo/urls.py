@@ -8,7 +8,9 @@ urlpatterns = [
     path('api/v1/balance/',include("balance.api.urls")),
     path('api/v1/call-histories/',include("call_histories.api.urls")),
     path('api/v1/favorites/',include("favorites.api.urls")),
+    path('api/v1/notifications/',include("notifications.api.urls")),
     path('api/v1/profiles/',include("profiles.api.urls")),
+    path('api/v1/searches/',include("searches.api.urls")),
 
     # Firebase Cloud Messaging (FCM)
     path('api/v1/fcm/',include("fcm.api.urls")),

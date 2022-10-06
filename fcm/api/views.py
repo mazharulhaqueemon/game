@@ -133,7 +133,7 @@ class SinglePushForCallingCreateApiView(CreateAPIView):
             # title, message, image, peeredUid, peeredName, callType
             push_obj = None
             if image is not None:
-                push_obj = Push(title,message,image,None,None,None)
+                push_obj = Push(title,message,image,peered_uid,peered_name,call_type)
             else:
                 push_obj = Push(title,message,None,peered_uid,peered_name,call_type)
 

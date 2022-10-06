@@ -50,7 +50,9 @@ INSTALLED_APPS = [
     'balance',
     'call_histories',
     'favorites',
+    'notifications',
     'profiles',
+    'searches',
 ]
 
 MIDDLEWARE = [
@@ -165,6 +167,14 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Configuring SMTP Server
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'itheadnurul@gmail.com'
+EMAIL_HOST_PASSWORD = 'ujgxaetdmglvgdaa' #past the key or password app here
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'itheadnurul@gmail.com'
 
 # JAZZMIN_UI_TWEAKS = {
 #     "theme": "darkly",

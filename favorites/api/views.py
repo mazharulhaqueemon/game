@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import FavoriteUserSerializer,UserSerializer
 from favorites.models import FavoriteUser
 from accounts.models import User
+from notifications.models import Notification
 
 class FavoriteUsersRetrieveApiView(RetrieveAPIView):
     authentication_classes = [TokenAuthentication]
@@ -45,14 +46,21 @@ class FavoriteUserCreateApiView(CreateAPIView):
             return Response({},status=HTTP_204_NO_CONTENT)
 
         favorite_users_obj = FavoriteUser.objects.filter(user=user_obj).first()
+        notification_obj = Notification()
+        notification_obj.user = peer_user_obj
+        notification_obj.from_user = user_obj
 
         if peer_user_obj in favorite_users_obj.favorite_users.all():
             # Remove peer user from favorite list
-            favorite_users_obj.favorite_users.remove(peer_user_obj)
+            favorite_users_obj.favorite_users.remove(peer_user_obj) 
+            notification_obj.context = 'Removes you from favorite list'
+            notification_obj.save()
             return Response(status=HTTP_200_OK)
         else:
             # Add peer user to favorite list
             favorite_users_obj.favorite_users.add(peer_user_obj)
+            notification_obj.context = 'Adds you into favorite list'
+            notification_obj.save()
             serializer_peer_user = UserSerializer(instance=peer_user_obj,context={"request": request})
 
             return Response({'peer_user':serializer_peer_user.data},status=HTTP_201_CREATED)

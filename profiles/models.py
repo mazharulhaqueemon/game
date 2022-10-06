@@ -27,6 +27,8 @@ class Profile(models.Model):
     cover_image   = models.ImageField(upload_to=cover_image_path, blank=True, null=True)
     birthday = models.DateField(auto_now=False,auto_now_add=False,blank=True,null=True)
     gender = models.CharField(max_length=20,blank=True,null=True)
+    address = models.CharField(max_length=250,blank=True,null=True)
+    about = models.TextField(blank=True,null=True)
     
     # Date Only
     registered_date = models.DateField(auto_now_add=True)

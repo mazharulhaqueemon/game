@@ -1,5 +1,9 @@
+import random
 from django.utils import timezone
 from datetime import date
+from django.core.mail import EmailMessage
+from django.conf import settings
+
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
@@ -96,3 +100,95 @@ class LogoutCreateApiView(CreateAPIView):
             fcm_token_obj.delete()
 
         return Response(status=HTTP_201_CREATED)
+
+
+# Change new Password
+class ChangePasswordUpdateApiView(UpdateAPIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user_obj = request.user
+        data_obj = request.data
+        old_password = data_obj.get('old_password',None)
+        new_password = data_obj.get('new_password',None)
+
+        if old_password and new_password:
+            is_password_exists = user_obj.check_password(old_password)
+            if is_password_exists is True:
+                # set user new password
+                user_obj.set_password(new_password)
+                user_obj.save()
+                return Response({}, status=HTTP_200_OK,)
+            else:
+                return Response({},status=HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+        return Response({}, status=HTTP_204_NO_CONTENT,)
+
+# Generate OPT
+class PasswordResetOtpCreateApiView(CreateAPIView):
+    authentication_classes = []
+    permission_classes = []
+ 
+    def create(self, request, *args, **kwargs):
+        data_obj = request.data
+        phone = data_obj.get('mobile',None)
+        email = data_obj.get('email',None)
+
+        # user = User.objects.filter(phone = phone).first()
+        profile_obj = Profile.objects.filter(user__phone=phone,email=email).first()
+        if profile_obj:
+            code = random.randint(100000,999999)
+
+            old = PhoneOTP.objects.filter(phone__iexact = phone)
+            if old.exists():
+                old = old.first()
+                old.otp = code
+                old.count = old.count + 1
+                old.save()
+            else:
+                PhoneOTP.objects.create(
+                    phone = phone,
+                    otp = code,
+                )
+            # Implementing OTP email system
+            subject = "Metazo password reset OTP"
+            body = f'Your Password Reset OTP is: \n\n{code}'
+            email_obj = EmailMessage(subject=subject,body=body,from_email=settings.EMAIL_HOST_USER,to=[email])
+            email_obj.content_subtype = "html"
+            try:
+                email_obj.send(fail_silently=False)
+            except:
+                pass
+            return Response(status=HTTP_201_CREATED,)
+
+        return Response({},status=HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+# Reset Forget Password
+class ResetPasswordUpdateApiView(UpdateAPIView):
+    authentication_classes = []
+    permission_classes = [] 
+
+    def update(self, request, *args, **kwargs):
+        data_obj = request.data
+        phone = data_obj.get('mobile',None)
+        password = data_obj.get('password',None)
+        otp_sent = data_obj.get('otp',None)
+        user_obj = User.objects.filter(phone = phone).first()
+        old = PhoneOTP.objects.filter(phone__iexact=phone)
+
+        if old.exists() and user_obj and password is not None:
+            old = old.last()
+            otp = old.otp
+            if str(otp) == otp_sent:
+                PhoneOTP.objects.filter(phone__iexact=phone).delete()
+                # Reset password
+                # set user new password
+                user_obj.set_password(password)
+                user_obj.save()
+                return Response({},status=HTTP_200_OK)
+
+            else:
+                return Response({},status=HTTP_203_NON_AUTHORITATIVE_INFORMATION)
+
+        return Response({},status=HTTP_204_NO_CONTENT)
