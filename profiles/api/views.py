@@ -13,7 +13,7 @@ from rest_framework.status import (
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from profiles.models import Profile
-from .serializers import ProfileSerializer
+from .serializers import ProfileSerializer,ProfileDetailsSerializer,ProfileDetailsOfOtherUserSerializer
 from searches.api.serializers import SearchSerializer
 from metazo.utils import compress,delete_file
 
@@ -41,11 +41,11 @@ class ProfileRetrieveApiView(RetrieveAPIView):
         if user_id == user.id:
             # My Profile
             profile_obj = user.profile
-            serializer_profile = ProfileSerializer(instance=profile_obj,context={"request": request})
+            serializer_profile = ProfileDetailsSerializer(instance=profile_obj,context={"request": request})
         else:
             # Other Profile
             profile_obj = Profile.objects.filter(user__id=user_id).first()
-            serializer_profile = SearchSerializer(instance=profile_obj,context={"request": request})
+            serializer_profile = ProfileDetailsOfOtherUserSerializer(instance=profile_obj,context={"request": request})
 
         if profile_obj is None:
             return Response(status=HTTP_204_NO_CONTENT)
