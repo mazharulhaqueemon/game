@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'notifications',
     'profiles',
     'searches',
+    'lottery'
 ] 
 
 MIDDLEWARE = [
