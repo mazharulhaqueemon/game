@@ -6,6 +6,7 @@ urlpatterns = [
     # API Urls 
     path('api/v1/auth/',include("accounts.api.urls")),
     path('api/v1/balance/',include("balance.api.urls")),
+    path('api/v1/lottery/',include("lottery.api.urls")),
     path('api/v1/call-histories/',include("call_histories.api.urls")),
     path('api/v1/favorites/',include("favorites.api.urls")),
     path('api/v1/notifications/',include("notifications.api.urls")),
